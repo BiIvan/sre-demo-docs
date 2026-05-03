@@ -10,8 +10,11 @@
     хххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххх
     хххххххх
     -----END OPENSSH PRIVATE KEY-----
+    
     mkdir .ssh
-    PowerShell:
+    
+    ##PowerShell:
+    
     @"
     -----BEGIN OPENSSH PRIVATE KEY-----
     хххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххx
@@ -22,7 +25,8 @@
     -----END OPENSSH PRIVATE KEY-----
     "@ | set-content .ssh\user_key
     
-    Bash:
+    ##Bash:
+    
     cat << EOFOE > .ssh/user_key
     -----BEGIN OPENSSH PRIVATE KEY-----
     хххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххx
@@ -32,12 +36,16 @@
     хххххххх
     -----END OPENSSH PRIVATE KEY-----
     EOFOE
+    
     далее буду писать код для PowerShell, так как в bash для админов всё проще
     
 
 #2. Забираем конфигурацилонный файл k8s с master-ноды
+
     $IPaddress_ext="ааа.ббб.ввв.ггг"
+    
     mkdir .kube
+    
     scp -i .ssh\user_key ubuntu@$IPaddress_ext:~/.kube/config .\.kube\config
     
     готовим файл конфигурации кластера, согласно инструкции
