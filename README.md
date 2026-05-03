@@ -263,8 +263,10 @@
 
     
 Имя ресурса: r-1node-k8s-module-9-final-879393733
+
 Данные для подключения к виртуальной машине. IP-адрес -- 111.88.146.213.
 Приватный ключ:
+
 -----BEGIN OPENSSH PRIVATE KEY-----
 b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZWQyNTUx
 OQAAACCvdl3m7EmiCUxO1Y+Gux3TXznGH7FuntIM9U38fntmBAAAAIjtsAqh7bAKoQAAAAtzc2gt
@@ -272,3 +274,4 @@ ZWQyNTUxOQAAACCvdl3m7EmiCUxO1Y+Gux3TXznGH7FuntIM9U38fntmBAAAAEBZcCZJrd20k/OD
 gleICklC75/CbKfvn2ilmEuH+LoZEK92XebsSaIJTE7Vj4a7HdNfOcYfsW6e0gz1Tfx+e2YEAAAA
 AAECAwQF
 -----END OPENSSH PRIVATE KEY-----
+
