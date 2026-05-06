@@ -1,0 +1,39 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: podinfo-http-errors
+  namespace: demo
+  labels:
+    release: mon
+spec:
+  groups:
+    - name: podinfo.rules
+      rules:
+        - alert: PodInfoHttpErrors
+          expr: |
+            sum(
+              increase(http_requests_total{namespace="demo", container="podinfo", status=~"4..|5.."}[5m])
+            ) > 0
+          for: 1m
+          labels:
+            service: podinfo
+            severity: warning
+          annotations:
+            summary: "PodInfo: 4xx or 5xx HTTP responses detected"
+            description: "Podinfo returned non-2xx HTTP responses in the last 5 minutes. Check the pod/service status and application logs."
+
+        - alert: PodInfoHighLatency
+          expr: |
+            histogram_quantile(
+              0.95,
+              sum(
+                rate(http_request_duration_seconds_bucket{namespace="demo", container="podinfo"}[5m])
+              ) by (le, namespace, container)
+            ) > 0.5
+          for: 5m
+          labels:
+            service: podinfo
+            severity: warning
+          annotations:
+            summary: "PodInfo: high request latency detected"
+            description: "Podinfo p95 request latency is above 500ms for 5 minutes. Check downstream dependencies, pod CPU/memory, and request load."

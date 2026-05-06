@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: oncall
+  namespace: monitoring
+  labels:
+    release: mon
+spec:
+  route:
+    receiver: oncall
+    groupBy: ["service"]
+    groupWait: 10s
+    groupInterval: 1m
+    repeatInterval: 3h
+  receivers:
+    - name: oncall
+      webhookConfigs:
+        - url: "http://oncall-engine.oncall.svc.cluster.local:8080/integrations/v1/alertmanager/Gtv3MmL03nLyc7rHqhSzRdy96/"
+          sendResolved: true
+          maxAlerts: 50 

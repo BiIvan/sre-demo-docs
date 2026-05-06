@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mkdocs
+  namespace: docs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mkdocs
+  template:
+    metadata:
+      labels:
+        app: mkdocs
+    spec:
+      volumes:
+        - name: work
+          emptyDir: {}
+        - name: site
+          emptyDir: {}
+
+      initContainers:
+        - name: git-clone
+          image: alpine/git:latest
+          env:
+            - name: REPO_URL
+              value: "https://github.com/BiIvan/sre-demo-docs.git"
+            - name: REPO_REF
+              value: "main"
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -e
+              rm -rf /work/repo
+              git clone --depth 1 --branch "$REPO_REF" "$REPO_URL" /work/repo
+          volumeMounts:
+            - name: work
+              mountPath: /work
+
+        - name: mkdocs-build
+          image: squidfunk/mkdocs-material:9
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -e
+              cd /work/repo
+              mkdocs build --site-dir /site
+          volumeMounts:
+            - name: work
+              mountPath: /work
+            - name: site
+              mountPath: /site
+
+      containers:
+        - name: nginx
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: site
+              mountPath: /usr/share/nginx/html

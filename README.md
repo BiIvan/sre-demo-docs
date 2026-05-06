@@ -10,11 +10,8 @@
     хххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххх
     хххххххх
     -----END OPENSSH PRIVATE KEY-----
-    
     mkdir .ssh
-    
-    ##PowerShell:
-    
+    PowerShell:
     @"
     -----BEGIN OPENSSH PRIVATE KEY-----
     хххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххx
@@ -25,8 +22,7 @@
     -----END OPENSSH PRIVATE KEY-----
     "@ | set-content .ssh\user_key
     
-    ##Bash:
-    
+    Bash:
     cat << EOFOE > .ssh/user_key
     -----BEGIN OPENSSH PRIVATE KEY-----
     хххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххххx
@@ -36,16 +32,12 @@
     хххххххх
     -----END OPENSSH PRIVATE KEY-----
     EOFOE
-    
     далее буду писать код для PowerShell, так как в bash для админов всё проще
     
 
 #2. Забираем конфигурацилонный файл k8s с master-ноды
-
     $IPaddress_ext="ааа.ббб.ввв.ггг"
-    
     mkdir .kube
-    
     scp -i .ssh\user_key ubuntu@$IPaddress_ext:~/.kube/config .\.kube\config
     
     готовим файл конфигурации кластера, согласно инструкции
@@ -167,6 +159,22 @@
               annotations:
                 summary: "PodInfo: 4xx or 5xx HTTP responses detected"
                 description: "Podinfo returned non-2xx HTTP responses in the last 5 minutes. Check the pod/service status and application logs."
+
+            - alert: PodInfoHighLatency
+              expr: |
+                histogram_quantile(
+                  0.95,
+                  sum(
+                    rate(http_request_duration_seconds_bucket{namespace="demo", container="podinfo"}[5m])
+                  ) by (le, namespace, container)
+                ) > 0.5
+              for: 5m
+              labels:
+                service: podinfo
+                severity: warning
+              annotations:
+                summary: "PodInfo: high request latency detected"
+                description: "Podinfo p95 request latency is above 500ms for 5 minutes. Check downstream dependencies, pod CPU/memory, and request load."
     "@ | set-content prometheusrule-podinfo.yaml
     kubectl apply -f prometheusrule-podinfo.yaml 
     
@@ -263,15 +271,13 @@
 
     
 Имя ресурса: r-1node-k8s-module-9-final-879393733
-
-Данные для подключения к виртуальной машине. IP-адрес -- 111.88.146.213.
+Данные для подключения к виртуальной машине. IP-адрес -- 111.88.147.0.
 Приватный ключ:
-
 -----BEGIN OPENSSH PRIVATE KEY-----
 b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZWQyNTUx
-OQAAACCvdl3m7EmiCUxO1Y+Gux3TXznGH7FuntIM9U38fntmBAAAAIjtsAqh7bAKoQAAAAtzc2gt
-ZWQyNTUxOQAAACCvdl3m7EmiCUxO1Y+Gux3TXznGH7FuntIM9U38fntmBAAAAEBZcCZJrd20k/OD
-gleICklC75/CbKfvn2ilmEuH+LoZEK92XebsSaIJTE7Vj4a7HdNfOcYfsW6e0gz1Tfx+e2YEAAAA
+OQAAACCyXXEYa2cx8J7yNwYFGFCPqvdhhxugDZ5s4mUFG8FO+QAAAIgmAUK1JgFCtQAAAAtzc2gt
+ZWQyNTUxOQAAACCyXXEYa2cx8J7yNwYFGFCPqvdhhxugDZ5s4mUFG8FO+QAAAECVjSf9Y6tPoRcD
+wQMW7KrrgC2xHlbwwEj3D2inlS021LJdcRhrZzHwnvI3BgUYUI+q92GHG6ANnmziZQUbwU75AAAA
 AAECAwQF
 -----END OPENSSH PRIVATE KEY-----
 
